@@ -12,4 +12,6 @@ const firebaseConfig = {
   measurementId:     "G-RDLRPC20DR",
 };
 
-firebase.initializeApp(firebaseConfig);
+if (typeof firebase !== 'undefined') {
+  firebase.initializeApp(firebaseConfig);
+}

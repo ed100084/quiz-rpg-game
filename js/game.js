@@ -355,9 +355,6 @@ function renderBoardRows(board) {
       ${e.date ? `<span class="lb-date">${e.date}</span>` : ''}
     </div>`).join('');
 }
-    </div>
-  `;
-}
 
 // ── 排行榜畫面 ────────────────────────────────────────
 async function renderLeaderboard() {
