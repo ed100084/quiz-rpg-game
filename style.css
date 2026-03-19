@@ -804,6 +804,29 @@ body {
 .lb-name { flex: 1; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lb-score { font-weight: 900; color: var(--accent); white-space: nowrap; }
 
+.lb-date {
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-left: auto;
+  white-space: nowrap;
+}
+.lb-loading {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+  padding: 6px 0 2px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.lb-source {
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--muted);
+  padding-top: 6px;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
 .lb-empty {
   text-align: center;
   color: var(--muted);
