@@ -321,6 +321,13 @@ function renderStart() {
         </div>
       </div>
 
+      <div class="name-input-wrap">
+        <input id="name-input" class="name-input" type="text" maxlength="12"
+          placeholder="輸入你的名字（最多12字）"
+          value="${getPlayerName()}"
+          oninput="setPlayerName(this.value)">
+      </div>
+
       <button class="btn btn-primary btn-full" style="max-width:320px" onclick="startGame()">
         ⚔️ 開始冒險
       </button>
