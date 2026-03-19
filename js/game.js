@@ -2,6 +2,8 @@
 //  勇者大挑戰 — 知識冒險  |  game.js
 // =====================================================
 
+const VERSION = 'v1.3.0';
+
 // ── 怪物設定 ──────────────────────────────────────────
 const MONSTERS = [
   { name: '史萊姆',   emoji: '🟢', maxHp: 60,  attack: 12, reward: 20,  diff: 1 },
@@ -289,16 +291,16 @@ async function loadFirebaseLeaderboard() {
 
 // ── 開始畫面 ──────────────────────────────────────────
 function renderStart() {
-  const hi = getHighScore();
-  const savedName = getPlayerName();
   const pending = JSON.parse(localStorage.getItem('pendingBonus') || 'null');
-  const streak = parseInt(localStorage.getItem('loginStreak') || '0');
+  const streak  = parseInt(localStorage.getItem('loginStreak') || '0');
+  const board   = getLocalLeaderboard();
 
   app().innerHTML = `
     <div id="screen-start">
       <div class="hero-emoji">🗡️</div>
       <div class="game-title">勇者大挑戰</div>
       <div class="game-subtitle">知識冒險 RPG</div>
+      <div class="version-badge">${VERSION}</div>
 
       ${pending ? `
         <div class="daily-bonus-banner" onclick="claimDailyBonus()">
@@ -310,29 +312,23 @@ function renderStart() {
         </div>
       ` : streak > 0 ? `<div class="streak-info">🔥 已連續簽到 ${streak} 天</div>` : ''}
 
-      <div class="name-input-wrap">
-        <label for="player-name-input">你的名字</label>
-        <input id="player-name-input" type="text" maxlength="12" placeholder="輸入名字（最多12字）"
-          value="${savedName}" oninput="setPlayerName(this.value)" />
+      <!-- 高分排行榜 -->
+      <div class="start-leaderboard">
+        <div class="start-lb-title">🏆 高分排行榜</div>
+        ${board.length === 0
+          ? `<div class="lb-empty">還沒有紀錄，快去挑戰！</div>`
+          : board.slice(0, 5).map((e, i) => `
+              <div class="lb-row ${['gold','silver','bronze'][i] || ''}">
+                <span class="lb-rank">${['🥇','🥈','🥉'][i] || `#${i+1}`}</span>
+                <span class="lb-name">${e.name}</span>
+                <span class="lb-score">⭐ ${e.score}</span>
+                ${e.date ? `<span class="lb-date">${e.date}</span>` : ''}
+              </div>`).join('')}
       </div>
 
-      <div class="start-info">
-        <h3>遊戲說明</h3>
-        <ul>
-          <li><span>⚔️</span>回答問題攻擊怪物</li>
-          <li><span>⏱️</span>每題 30 秒答題時間</li>
-          <li><span>💰</span>擊敗怪物獲得金幣</li>
-          <li><span>🏪</span>每 3 關進入商店購買道具</li>
-          <li><span>🔥</span>連續答對獲得連擊加成</li>
-        </ul>
-      </div>
-
-      ${hi > 0 ? `<div class="highscore-display">歷史最高分：<b>${hi}</b></div>` : ''}
-
-      <div style="display:flex;gap:10px;width:100%;max-width:360px">
-        <button class="btn btn-primary btn-full" onclick="startGame()">⚔️ 開始冒險</button>
-        <button class="btn btn-secondary" onclick="renderLeaderboard()" style="white-space:nowrap">🏆 排行榜</button>
-      </div>
+      <button class="btn btn-primary btn-full" style="max-width:320px" onclick="startGame()">
+        ⚔️ 開始冒險
+      </button>
     </div>
   `;
 }
@@ -597,47 +593,31 @@ function renderResult() {
 }
 
 // ── 遊戲結束畫面 ─────────────────────────────────────
-async function renderGameOver() {
+function renderGameOver() {
   saveHighScore();
-  const name = getPlayerName();
-  const board = saveScoreLocally(name, G.score);
-  submitToFirebase(name, G.score); // 非同步，靜默
-
-  const myRank = board.findIndex(e => e.name === (name || '無名英雄') && e.score === G.score) + 1;
+  const finalScore = G.score;
+  const monsterName = G.monster.name;
+  const { battlesWon, totalCorrect, totalKills, earnedBadges } = G;
 
   app().innerHTML = `
     <div id="screen-gameover">
       <div class="gameover-emoji">💀</div>
       <div class="gameover-title">GAME OVER</div>
-      <p style="color:var(--muted);margin:8px 0">你被 ${G.monster.name} 擊倒了...</p>
-      ${myRank > 0 ? `<p style="color:var(--accent);font-weight:700">🏆 本局排名：#${myRank}</p>` : ''}
+      <p style="color:var(--muted);margin:8px 0">你被 ${monsterName} 擊倒了...</p>
 
       <div class="result-stats">
-        <div class="result-stat-row"><span>最終得分</span><span class="rsv">⭐ ${G.score}</span></div>
-        <div class="result-stat-row"><span>通關數</span><span class="rsv">${G.battlesWon} 關</span></div>
-        <div class="result-stat-row"><span>答對題數</span><span class="rsv">${G.totalCorrect} 題</span></div>
-        <div class="result-stat-row"><span>擊敗怪物</span><span class="rsv">${G.totalKills} 隻</span></div>
+        <div class="result-stat-row"><span>最終得分</span><span class="rsv">⭐ ${finalScore}</span></div>
+        <div class="result-stat-row"><span>通關數</span><span class="rsv">${battlesWon} 關</span></div>
+        <div class="result-stat-row"><span>答對題數</span><span class="rsv">${totalCorrect} 題</span></div>
+        <div class="result-stat-row"><span>擊敗怪物</span><span class="rsv">${totalKills} 隻</span></div>
         <div class="result-stat-row"><span>歷史最高分</span><span class="rsv">⭐ ${getHighScore()}</span></div>
       </div>
 
-      <!-- 本地排行榜 -->
-      <div class="leaderboard-list" style="width:100%;max-width:360px">
-        <div style="font-size:0.8rem;color:var(--muted);margin-bottom:8px;text-align:center">💾 本地排行榜 Top 5</div>
-        ${board.slice(0, 5).map((entry, i) => `
-          <div class="lb-row ${i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : ''}
-            ${entry.score === G.score && entry.name === (name||'無名英雄') ? 'current-player' : ''}">
-            <span class="lb-rank">${['🥇','🥈','🥉'][i] || `#${i+1}`}</span>
-            <span class="lb-name">${entry.name}</span>
-            <span class="lb-score">⭐ ${entry.score}</span>
-          </div>
-        `).join('')}
-      </div>
-
-      ${G.earnedBadges.size > 0 ? `
+      ${earnedBadges.size > 0 ? `
         <div class="badges-section" style="max-width:360px">
           <h3>本局獲得徽章</h3>
           <div class="badges-grid">
-            ${[...G.earnedBadges].map(id => {
+            ${[...earnedBadges].map(id => {
               const b = BADGES.find(b => b.id === id);
               return b ? `<div class="badge earned">${b.icon} ${b.name}</div>` : '';
             }).join('')}
@@ -646,11 +626,72 @@ async function renderGameOver() {
       ` : ''}
 
       <div style="display:flex;gap:12px;width:100%;max-width:360px">
-        <button class="btn btn-primary btn-full" onclick="startGame()">🔄 再玩一次</button>
-        <button class="btn btn-secondary btn-full" onclick="renderStart()">🏠 首頁</button>
+        <button class="btn btn-primary btn-full" onclick="showNameModal(${finalScore})">📝 記錄分數</button>
+        <button class="btn btn-secondary btn-full" onclick="startGame()">🔄 再玩一次</button>
+      </div>
+      <button class="btn btn-secondary btn-full" style="max-width:360px;margin-top:8px" onclick="renderStart()">🏠 返回首頁</button>
+    </div>
+  `;
+}
+
+// ── 名字輸入 Modal ────────────────────────────────────
+function showNameModal(score) {
+  const savedName = getPlayerName();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'name-modal';
+  overlay.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-title">📝 記錄你的分數</div>
+      <div class="modal-score">⭐ ${score} 分</div>
+      <div class="modal-body">
+        <label for="modal-name-input">輸入你的名字</label>
+        <input id="modal-name-input" type="text" maxlength="12"
+          placeholder="最多 12 個字" value="${savedName}"
+          onkeydown="if(event.key==='Enter')confirmName(${score})" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary btn-full" onclick="confirmName(${score})">✅ 確認送出</button>
+        <button class="btn btn-secondary btn-full" onclick="closeModal()">略過</button>
       </div>
     </div>
   `;
+  document.body.appendChild(overlay);
+
+  // 自動 focus 輸入框
+  setTimeout(() => {
+    const input = document.getElementById('modal-name-input');
+    if (input) { input.focus(); input.select(); }
+  }, 50);
+}
+
+function confirmName(score) {
+  const input = document.getElementById('modal-name-input');
+  const name = (input ? input.value.trim() : '') || '無名英雄';
+  setPlayerName(name);
+  closeModal();
+  finalizeScore(name, score);
+}
+
+function closeModal() {
+  const el = document.getElementById('name-modal');
+  if (el) el.remove();
+}
+
+function finalizeScore(name, score) {
+  const board = saveScoreLocally(name, score);
+  submitToFirebase(name, score);
+
+  const myRank = board.findIndex(e => e.name === name && e.score === score) + 1;
+  if (myRank > 0 && myRank <= 3) {
+    notify(`🏆 恭喜！${name} 進入前 ${myRank} 名！`, 'success');
+  } else if (myRank > 0) {
+    notify(`📝 分數已記錄！排名 #${myRank}`, 'info');
+  }
+
+  // 短暫延遲後回首頁，讓玩家看到排行榜更新
+  setTimeout(() => renderStart(), 800);
 }
 
 // ═══════════════════════════════════════════════════════
