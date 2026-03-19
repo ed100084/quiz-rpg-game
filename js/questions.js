@@ -20,6 +20,9 @@ const QUESTIONS = {
     { q: "3/4 + 1/4 = ?", opts: ["4/8", "4/4", "1", "2"], ans: 2, diff: 1 },
     { q: "一個圓的直徑為10，半徑為？", opts: ["5", "10", "20", "100"], ans: 0, diff: 1 },
     { q: "100 - 37 × 2 = ?", opts: ["26", "126", "63", "74"], ans: 0, diff: 1 },
+    { q: "下列分數最大的是？", opts: ["3/5", "2/3", "5/8", "7/11"], ans: 1, diff: 1 },
+    { q: "一個骰子有幾面？", opts: ["4", "5", "6", "8"], ans: 2, diff: 1 },
+    { q: "7 × 8 = ?", opts: ["54", "56", "58", "64"], ans: 1, diff: 1 },
     // 中等
     { q: "√144 = ?", opts: ["11", "12", "13", "14"], ans: 1, diff: 2 },
     { q: "3x - 7 = 14，x = ?", opts: ["5", "6", "7", "8"], ans: 2, diff: 2 },
@@ -33,6 +36,8 @@ const QUESTIONS = {
     { q: "2/3 ÷ 4/9 = ?", opts: ["8/27", "3/2", "2/9", "6/12"], ans: 1, diff: 2 },
     { q: "等比數列 3, 6, 12...，第5項是？", opts: ["24", "36", "48", "96"], ans: 2, diff: 2 },
     { q: "一元二次方程式 x²-5x+6=0 的解為？", opts: ["1,6", "2,3", "-2,-3", "1,5"], ans: 1, diff: 2 },
+    { q: "0! = ?", opts: ["0", "1", "未定義", "無限大"], ans: 1, diff: 2 },
+    { q: "一個正六邊形的內角各為幾度？", opts: ["90°", "108°", "120°", "135°"], ans: 2, diff: 2 },
     // 困難
     { q: "若 f(x)=2x²-3x+1，f(2)=？", opts: ["1", "2", "3", "4"], ans: 2, diff: 3 },
     { q: "1 + 2 + 3 + ... + 100 = ?", opts: ["4950", "5000", "5050", "5100"], ans: 2, diff: 3 },
@@ -41,6 +46,8 @@ const QUESTIONS = {
     { q: "sin 30° = ?", opts: ["1/2", "√2/2", "√3/2", "1"], ans: 0, diff: 3 },
     { q: "下列哪個是無理數？", opts: ["0.5", "√4", "√2", "3/7"], ans: 2, diff: 3 },
     { q: "等差數列前n項和公式為？", opts: ["na₁", "n(a₁+aₙ)/2", "n²a₁", "naₙ/2"], ans: 1, diff: 3 },
+    { q: "log₂(8) = ?", opts: ["2", "3", "4", "8"], ans: 1, diff: 3 },
+    { q: "等差數列 -3, 1, 5, 9...，前10項的和是？", opts: ["150", "155", "160", "165"], ans: 0, diff: 3 },
   ],
 
   english: [
@@ -58,6 +65,9 @@ const QUESTIONS = {
     { q: "Which is an animal?", opts: ["Table", "Chair", "Tiger", "River"], ans: 2, diff: 1 },
     { q: "「delicious」最接近的意思是？", opts: ["好吃的", "漂亮的", "危險的", "安靜的"], ans: 0, diff: 1 },
     { q: "We ___ happy yesterday.", opts: ["are", "is", "were", "be"], ans: 2, diff: 1 },
+    { q: "「butterfly」的中文是？", opts: ["蜜蜂", "螞蟻", "蝴蝶", "蜻蜓"], ans: 2, diff: 1 },
+    { q: "Which is NOT a season?", opts: ["Spring", "Winter", "October", "Summer"], ans: 2, diff: 1 },
+    { q: "「勇敢的」的英文是？", opts: ["brave", "cave", "wave", "gave"], ans: 0, diff: 1 },
     // 中等
     { q: "She ___ studying when I called.", opts: ["is", "was", "were", "be"], ans: 1, diff: 2 },
     { q: "The opposite of 'difficult' is?", opts: ["Hard", "Tough", "Easy", "Complex"], ans: 2, diff: 2 },
@@ -69,6 +79,9 @@ const QUESTIONS = {
     { q: "Which sentence is correct?", opts: ["He don't like it.", "He doesn't likes it.", "He doesn't like it.", "He not like it."], ans: 2, diff: 2 },
     { q: "「Ambitious」的意思是？", opts: ["懶惰的", "膽怯的", "有抱負的", "誠實的"], ans: 2, diff: 2 },
     { q: "___ you mind closing the window?", opts: ["Will", "Would", "Should", "Could"], ans: 1, diff: 2 },
+    { q: "What is the plural of 'mouse'?", opts: ["mouses", "mices", "mice", "mouse"], ans: 2, diff: 2 },
+    { q: "They ___ watching TV when the power went out.", opts: ["are", "were", "was", "be"], ans: 1, diff: 2 },
+    { q: "「猶豫」的英文是？", opts: ["hesitate", "celebrate", "navigate", "investigate"], ans: 0, diff: 2 },
     // 困難
     { q: "If I ___ rich, I would travel the world.", opts: ["am", "was", "were", "be"], ans: 2, diff: 3 },
     { q: "「Perseverance」means?", opts: ["Laziness", "Persistence", "Pleasure", "Patience"], ans: 1, diff: 3 },
@@ -77,6 +90,8 @@ const QUESTIONS = {
     { q: "Not only ___ he smart, but also kind.", opts: ["is", "was", "are", "were"], ans: 0, diff: 3 },
     { q: "「Ephemeral」means?", opts: ["Permanent", "Short-lived", "Ancient", "Massive"], ans: 1, diff: 3 },
     { q: "Had I known earlier, I ___ helped.", opts: ["would have", "will have", "would", "could"], ans: 0, diff: 3 },
+    { q: "「Serendipity」means?", opts: ["Sadness", "A happy accident", "Determination", "Confusion"], ans: 1, diff: 3 },
+    { q: "「Ubiquitous」means?", opts: ["Unique", "Everywhere", "Unusual", "Underground"], ans: 1, diff: 3 },
   ],
 
   science: [
@@ -92,6 +107,9 @@ const QUESTIONS = {
     { q: "鑽石的主要成分是？", opts: ["矽", "碳", "鐵", "鈣"], ans: 1, diff: 1 },
     { q: "月球繞地球公轉一圈約需多少天？", opts: ["7天", "14天", "27天", "365天"], ans: 2, diff: 1 },
     { q: "下列哪個是可再生能源？", opts: ["煤炭", "石油", "天然氣", "太陽能"], ans: 3, diff: 1 },
+    { q: "光合作用主要在植物哪個部位進行？", opts: ["根部", "莖部", "葉綠體", "細胞核"], ans: 2, diff: 1 },
+    { q: "地震的強度通常用什麼衡量？", opts: ["分貝", "里氏規模", "帕斯卡", "焦耳"], ans: 1, diff: 1 },
+    { q: "冰的密度比水___。", opts: ["大", "小", "相等", "不確定"], ans: 1, diff: 1 },
     // 中等
     { q: "下列哪種物質是鹼性？", opts: ["醋", "檸檬汁", "小蘇打水", "鹽酸"], ans: 2, diff: 2 },
     { q: "DNA 位在細胞的哪個部位？", opts: ["細胞膜", "細胞質", "細胞核", "粒線體"], ans: 2, diff: 2 },
@@ -103,6 +121,9 @@ const QUESTIONS = {
     { q: "人體血型系統中，何種血型稱為「萬能供血者」？", opts: ["A型", "B型", "AB型", "O型"], ans: 3, diff: 2 },
     { q: "牛頓第一運動定律又稱為？", opts: ["重力定律", "慣性定律", "加速度定律", "作用力定律"], ans: 1, diff: 2 },
     { q: "地球磁場的北磁極位於地理上的哪個方向？", opts: ["北方", "南方", "東方", "西方"], ans: 1, diff: 2 },
+    { q: "人體共有幾對染色體？", opts: ["20對", "21對", "23對", "24對"], ans: 2, diff: 2 },
+    { q: "下列哪個元素是惰性氣體？", opts: ["氫（H）", "氮（N）", "氦（He）", "氟（F）"], ans: 2, diff: 2 },
+    { q: "地球距離太陽約多遠？", opts: ["1.5千萬公里", "1.5億公里", "15億公里", "1.5兆公里"], ans: 1, diff: 2 },
     // 困難
     { q: "光合作用的方程式：6CO₂ + 6H₂O → ?", opts: ["6O₂+C₆H₁₂O₆", "H₂O₂+O₂", "CO+H₂", "CH₄+O₂"], ans: 0, diff: 3 },
     { q: "牛頓第二運動定律：F = ?", opts: ["m+a", "m-a", "ma", "m/a"], ans: 2, diff: 3 },
@@ -111,6 +132,7 @@ const QUESTIONS = {
     { q: "電功率的計算公式是？", opts: ["P=IV", "P=I/V", "P=V/I", "P=I+V"], ans: 0, diff: 3 },
     { q: "下列哪個粒子帶負電？", opts: ["質子", "中子", "電子", "原子核"], ans: 2, diff: 3 },
     { q: "孟德爾遺傳定律中，顯性基因以何表示？", opts: ["小寫字母", "大寫字母", "數字", "符號"], ans: 1, diff: 3 },
+    { q: "黑洞的逃脫速度超過哪個速度？", opts: ["音速", "光速", "聲速的10倍", "地球第一宇宙速度"], ans: 1, diff: 3 },
   ],
 
   history: [
@@ -123,6 +145,9 @@ const QUESTIONS = {
     { q: "台灣最早的原住民族屬於哪個語系？", opts: ["印歐語系", "南島語系", "漢藏語系", "阿爾泰語系"], ans: 1, diff: 1 },
     { q: "聯合國成立於哪一年？", opts: ["1941", "1943", "1945", "1947"], ans: 2, diff: 1 },
     { q: "古希臘的民主政治發源地是？", opts: ["斯巴達", "雅典", "科林斯", "底比斯"], ans: 1, diff: 1 },
+    { q: "古羅馬帝國的首都是？", opts: ["雅典", "迦太基", "羅馬", "君士坦丁堡"], ans: 2, diff: 1 },
+    { q: "孔子是哪個時代的人？", opts: ["夏朝", "商朝", "春秋時代", "秦朝"], ans: 2, diff: 1 },
+    { q: "日本在哪一年宣布二戰投降？", opts: ["1943", "1944", "1945", "1946"], ans: 2, diff: 1 },
     // 中等
     { q: "工業革命最早發生在哪個國家？", opts: ["法國", "德國", "美國", "英國"], ans: 3, diff: 2 },
     { q: "下列哪位是文藝復興時期的藝術家？", opts: ["牛頓", "達文西", "愛因斯坦", "馬可波羅"], ans: 1, diff: 2 },
@@ -132,6 +157,8 @@ const QUESTIONS = {
     { q: "鴉片戰爭後，清朝與英國簽訂了哪個條約？", opts: ["北京條約", "南京條約", "馬關條約", "天津條約"], ans: 1, diff: 2 },
     { q: "法國大革命發生於哪一年？", opts: ["1688", "1776", "1789", "1848"], ans: 2, diff: 2 },
     { q: "「文藝復興」最早從哪個城市興起？", opts: ["巴黎", "威尼斯", "佛羅倫斯", "羅馬"], ans: 2, diff: 2 },
+    { q: "美國宣布獨立於哪一年？", opts: ["1774", "1776", "1778", "1780"], ans: 1, diff: 2 },
+    { q: "台灣在哪一年正式加入WTO？", opts: ["1995", "2000", "2002", "2005"], ans: 2, diff: 2 },
     // 困難
     { q: "馬關條約簽訂後，台灣割讓給哪個國家？", opts: ["英國", "美國", "日本", "俄國"], ans: 2, diff: 3 },
     { q: "法國大革命的口號不包含哪項？", opts: ["自由", "平等", "民主", "博愛"], ans: 2, diff: 3 },
@@ -152,6 +179,8 @@ const QUESTIONS = {
     { q: "「疑」的部首是？", opts: ["匕", "矢", "疋", "匹"], ans: 2, diff: 1 },
     { q: "「破釜沉舟」比喻什麼？", opts: ["準備充分", "下定決心不退縮", "輕鬆取勝", "放棄計畫"], ans: 1, diff: 1 },
     { q: "「魚目混珠」的意思是？", opts: ["魚和珍珠放在一起", "以假冒真", "見多識廣", "眼力很好"], ans: 1, diff: 1 },
+    { q: "「塞翁失馬」後面接的是？", opts: ["焉知非福", "何嘗不是好事", "物極必反", "因禍得福"], ans: 0, diff: 1 },
+    { q: "「半途而廢」的意思是？", opts: ["努力堅持", "中途放棄", "全力以赴", "猶豫不決"], ans: 1, diff: 1 },
     // 中等
     { q: "李白是哪個朝代的詩人？", opts: ["漢朝", "唐朝", "宋朝", "明朝"], ans: 1, diff: 2 },
     { q: "「人之初，性本善」出自哪本書？", opts: ["論語", "孟子", "三字經", "千字文"], ans: 2, diff: 2 },
@@ -160,12 +189,35 @@ const QUESTIONS = {
     { q: "杜甫的詩風格通常被形容為？", opts: ["飄逸浪漫", "清新自然", "沉鬱頓挫", "豪放粗獷"], ans: 2, diff: 2 },
     { q: "「邯鄲學步」說的是哪個地方的走路方式？", opts: ["邯鄲", "燕國", "齊國", "楚國"], ans: 0, diff: 2 },
     { q: "「朝三暮四」原來說的是用什麼餵養猴子？", opts: ["香蕉", "橡實", "蘋果", "堅果"], ans: 1, diff: 2 },
+    { q: "「班門弄斧」中的「班」指的是誰？", opts: ["班固", "魯班", "班超", "班昭"], ans: 1, diff: 2 },
+    { q: "「紙上談兵」的主角是誰？", opts: ["廉頗", "白起", "趙括", "李牧"], ans: 2, diff: 2 },
+    { q: "「青出於藍」後面接的是？", opts: ["而勝於藍", "而冷於藍", "更勝一籌", "後浪推前浪"], ans: 0, diff: 2 },
+    { q: "「千里之行，始於足下」出自何書？", opts: ["論語", "老子", "莊子", "孟子"], ans: 1, diff: 2 },
     // 困難
     { q: "「曲高和寡」的「和」，讀作？", opts: ["ㄏㄜˊ", "ㄏㄜˋ", "ㄏㄨˋ", "ㄏㄨㄢˊ"], ans: 1, diff: 3 },
     { q: "下列哪句詩出自王維？", opts: ["床前明月光", "大漠孤煙直", "春眠不覺曉", "鋤禾日當午"], ans: 1, diff: 3 },
     { q: "「洛陽紙貴」與哪位文學家有關？", opts: ["陶淵明", "左思", "蘇東坡", "歐陽修"], ans: 1, diff: 3 },
     { q: "「浮生若夢，為歡幾何」出自哪位詩人？", opts: ["杜甫", "白居易", "李白", "王維"], ans: 2, diff: 3 },
     { q: "「字」和「詞」的差別，下列哪個說法正確？", opts: ["字即詞，無差別", "詞是由字組成的語言單位", "字比詞大", "詞只有一個字"], ans: 1, diff: 3 },
+  ],
+
+  joke: [
+    // 腦筋急轉彎 / 冷笑話（全部 diff:1，輕鬆答題）
+    { q: "什麼狗不會叫？", opts: ["老狗", "熱狗", "野狗", "小狗"], ans: 1, diff: 1 },
+    { q: "數學課本為什麼總是不開心？", opts: ["太難了", "滿是「問題」", "沒有圖片", "太重了"], ans: 1, diff: 1 },
+    { q: "什麼東西越洗越髒？", opts: ["手", "碗", "水", "衣服"], ans: 2, diff: 1 },
+    { q: "左邊一個「狗」，右邊一個「狗」，中間是什麼？", opts: ["大狗", "骨頭", "夠了！", "狗窩"], ans: 2, diff: 1 },
+    { q: "什麼車不用加油也不用充電？", opts: ["電動車", "太陽能車", "腳踏車", "氫氣車"], ans: 2, diff: 1 },
+    { q: "為什麼0不受歡迎？", opts: ["什麼都沒有", "太圓滑了", "它是偶數", "被8包圍了"], ans: 3, diff: 1 },
+    { q: "一個人從10樓跳下，為什麼沒事？", opts: ["掉進游泳池", "他是超人", "從一樓門口跳出去的", "穿了降落傘"], ans: 2, diff: 1 },
+    { q: "先有雞還是先有蛋？", opts: ["先有雞", "先有蛋", "同時出現", "這是個冷笑話，跳過！"], ans: 3, diff: 1 },
+    { q: "程式設計師老婆說：「買一瓶牛奶，看到雞蛋就買一打。」他買了幾瓶牛奶？", opts: ["1瓶", "6瓶", "12瓶", "沒買"], ans: 2, diff: 1 },
+    { q: "為什麼程式設計師分不清Halloween和Christmas？", opts: ["節日都很像", "都要吃糖", "OCT 31 = DEC 25（八進制）", "都是外國節日"], ans: 2, diff: 2 },
+    { q: "有一根蠟燭、一個油燈和一個壁爐，只有一根火柴，要先點哪個？", opts: ["蠟燭", "油燈", "壁爐", "火柴"], ans: 3, diff: 1 },
+    { q: "為什麼科學家無法信任原子？", opts: ["太小看不見", "因為它們組成一切事物", "因為它們會說謊（make up everything）", "因為它們不穩定"], ans: 2, diff: 1 },
+    { q: "什麼東西有嘴卻不能說話？", opts: ["電視", "書", "瓶子", "以上皆是"], ans: 2, diff: 1 },
+    { q: "為什麼骷髏不打架？", opts: ["沒有力氣", "因為他們沒有膽（膽量）", "因為太懶了", "骷髏不會動"], ans: 1, diff: 1 },
+    { q: "什麼時候1加1不等於2？", opts: ["數學壞掉了", "二進制：1+1=10", "反正冷笑話不用算對", "以上皆是"], ans: 1, diff: 1 },
   ],
 };
 
@@ -175,6 +227,7 @@ const CATEGORY_NAMES = {
   science: "自然",
   history: "社會",
   chinese: "國文",
+  joke: "冷笑話",
 };
 
 const CATEGORY_CLASS = {
@@ -183,6 +236,7 @@ const CATEGORY_CLASS = {
   science: "science",
   history: "history",
   chinese: "chinese",
+  joke: "joke",
 };
 
 /**
