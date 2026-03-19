@@ -329,10 +329,12 @@ function renderStart() {
   loadFirebaseLeaderboard().then(fireBoard => {
     const el = document.getElementById('lb-content');
     if (!el) return; // 使用者已離開此頁面
-    if (fireBoard && fireBoard.length > 0) {
+    if (fireBoard !== null) {
+      // Firebase 成功回傳（即使是空的），顯示全球排行
       el.innerHTML = renderBoardRows(fireBoard) +
         '<div class="lb-source">🌐 全球排行</div>';
     } else {
+      // Firebase 失敗（未設定或網路錯誤），降級顯示本地紀錄
       el.innerHTML = renderBoardRows(localBoard) +
         '<div class="lb-source">💾 本地紀錄</div>';
     }
