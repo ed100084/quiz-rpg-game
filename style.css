@@ -382,6 +382,7 @@ body {
 .q-category.english { background: #2a1a4a; color: #bb88ff; }
 .q-category.science { background: #1a3a2a; color: #66ddaa; }
 .q-category.history { background: #3a2a1a; color: #ffaa66; }
+.q-category.joke    { background: #3a3a1a; color: #ffee55; }
 
 .q-timer {
   display: flex;
