@@ -289,16 +289,16 @@ async function loadFirebaseLeaderboard() {
 
 // ── 開始畫面 ──────────────────────────────────────────
 function renderStart() {
-  const hi = getHighScore();
-  const savedName = getPlayerName();
   const pending = JSON.parse(localStorage.getItem('pendingBonus') || 'null');
-  const streak = parseInt(localStorage.getItem('loginStreak') || '0');
+  const streak  = parseInt(localStorage.getItem('loginStreak') || '0');
+  const localBoard = getLocalLeaderboard();
 
   app().innerHTML = `
     <div id="screen-start">
       <div class="hero-emoji">🗡️</div>
       <div class="game-title">勇者大挑戰</div>
       <div class="game-subtitle">知識冒險 RPG</div>
+      <div class="version-badge">${VERSION}</div>
 
       ${pending ? `
         <div class="daily-bonus-banner" onclick="claimDailyBonus()">
@@ -310,29 +310,47 @@ function renderStart() {
         </div>
       ` : streak > 0 ? `<div class="streak-info">🔥 已連續簽到 ${streak} 天</div>` : ''}
 
-      <div class="name-input-wrap">
-        <label for="player-name-input">你的名字</label>
-        <input id="player-name-input" type="text" maxlength="12" placeholder="輸入名字（最多12字）"
-          value="${savedName}" oninput="setPlayerName(this.value)" />
+      <!-- 高分排行榜 -->
+      <div class="start-leaderboard">
+        <div class="start-lb-title">🏆 高分排行榜</div>
+        <div id="lb-content">
+          ${renderBoardRows(localBoard)}
+          <div class="lb-loading">🌐 載入全球排行中...</div>
+        </div>
       </div>
 
-      <div class="start-info">
-        <h3>遊戲說明</h3>
-        <ul>
-          <li><span>⚔️</span>回答問題攻擊怪物</li>
-          <li><span>⏱️</span>每題 30 秒答題時間</li>
-          <li><span>💰</span>擊敗怪物獲得金幣</li>
-          <li><span>🏪</span>每 3 關進入商店購買道具</li>
-          <li><span>🔥</span>連續答對獲得連擊加成</li>
-        </ul>
-      </div>
+      <button class="btn btn-primary btn-full" style="max-width:320px" onclick="startGame()">
+        ⚔️ 開始冒險
+      </button>
+    </div>
+  `;
 
-      ${hi > 0 ? `<div class="highscore-display">歷史最高分：<b>${hi}</b></div>` : ''}
+  // 非同步載入 Firebase 排行榜，載入後更新
+  loadFirebaseLeaderboard().then(fireBoard => {
+    const el = document.getElementById('lb-content');
+    if (!el) return; // 使用者已離開此頁面
+    if (fireBoard && fireBoard.length > 0) {
+      el.innerHTML = renderBoardRows(fireBoard) +
+        '<div class="lb-source">🌐 全球排行</div>';
+    } else {
+      el.innerHTML = renderBoardRows(localBoard) +
+        '<div class="lb-source">💾 本地紀錄</div>';
+    }
+  });
+}
 
-      <div style="display:flex;gap:10px;width:100%;max-width:360px">
-        <button class="btn btn-primary btn-full" onclick="startGame()">⚔️ 開始冒險</button>
-        <button class="btn btn-secondary" onclick="renderLeaderboard()" style="white-space:nowrap">🏆 排行榜</button>
-      </div>
+function renderBoardRows(board) {
+  if (!board || board.length === 0) {
+    return '<div class="lb-empty">還沒有紀錄，快去挑戰！</div>';
+  }
+  return board.slice(0, 5).map((e, i) => `
+    <div class="lb-row ${['gold','silver','bronze'][i] || ''}">
+      <span class="lb-rank">${['🥇','🥈','🥉'][i] || `#${i+1}`}</span>
+      <span class="lb-name">${e.name}</span>
+      <span class="lb-score">⭐ ${e.score}</span>
+      ${e.date ? `<span class="lb-date">${e.date}</span>` : ''}
+    </div>`).join('');
+}
     </div>
   `;
 }
