@@ -312,15 +312,6 @@ function renderStart() {
         </div>
       ` : streak > 0 ? `<div class="streak-info">🔥 已連續簽到 ${streak} 天</div>` : ''}
 
-      <!-- 高分排行榜 -->
-      <div class="start-leaderboard">
-        <div class="start-lb-title">🏆 高分排行榜</div>
-        <div id="lb-content">
-          ${renderBoardRows(localBoard)}
-          <div class="lb-loading">🌐 載入全球排行中...</div>
-        </div>
-      </div>
-
       <div class="name-input-wrap">
         <input id="name-input" class="name-input" type="text" maxlength="12"
           placeholder="輸入你的名字（最多12字）"
@@ -331,6 +322,15 @@ function renderStart() {
       <button class="btn btn-primary btn-full" style="max-width:320px" onclick="startGame()">
         ⚔️ 開始冒險
       </button>
+
+      <!-- 高分排行榜 -->
+      <div class="start-leaderboard">
+        <div class="start-lb-title">🏆 高分排行榜</div>
+        <div id="lb-content">
+          ${renderBoardRows(localBoard)}
+          <div class="lb-loading">🌐 載入全球排行中...</div>
+        </div>
+      </div>
     </div>
   `;
 
