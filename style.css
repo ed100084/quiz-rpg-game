@@ -536,6 +536,22 @@ body {
   margin-top: auto;
 }
 
+.shop-tip {
+  font-size: 0.75rem;
+  color: var(--muted);
+  padding: 6px 12px;
+  margin-bottom: 4px;
+}
+.item-badge {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: auto;
+}
+.item-badge.owned { background: #223322; color: var(--green); }
+.item-badge.poor  { background: #332222; color: #ff8888; }
+.item-badge.locked { background: #222233; color: var(--muted); }
+
 .shop-player-stats {
   background: var(--panel);
   border: 2px solid #333355;

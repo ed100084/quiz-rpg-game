@@ -2,7 +2,7 @@
 //  勇者大挑戰 — 知識冒險  |  game.js
 // =====================================================
 
-const VERSION = 'v1.1.0'; // 每次發版請手動遞增
+const VERSION = 'v1.2.0'; // 每次發版請手動遞增
 
 // ── 怪物設定 ──────────────────────────────────────────
 const MONSTERS = [
@@ -51,13 +51,25 @@ function isSkinUnlocked(skinId, stats) {
 }
 
 // ── 商店道具 ──────────────────────────────────────────
+// tab: 'consumable' | 'weapon' | 'armor'
 const SHOP_ITEMS = [
-  { id: 'potion',     name: '生命藥水',   icon: '🧪', cost: 30,  desc: '立即恢復 50 點 HP', max: 99 },
-  { id: 'sword',      name: '鋼鐵之劍',   icon: '⚔️',  cost: 60,  desc: '永久提升 15 點攻擊力', max: 3 },
-  { id: 'shield',     name: '魔法護盾',   icon: '🛡️',  cost: 45,  desc: '下一次受傷免疫（一次性）', max: 3 },
-  { id: 'scroll',     name: '時間之書',   icon: '📜',  cost: 40,  desc: '本場答題時間 +10 秒', max: 2 },
-  { id: 'elixir',     name: '滿血靈藥',   icon: '💊',  cost: 100, desc: '完全恢復所有 HP', max: 1 },
-  { id: 'doubleGold', name: '財富護符',   icon: '🍀',  cost: 80,  desc: '下一場戰鬥金幣獲得翻倍', max: 2 },
+  // 消耗品
+  { id: 'potion',      name: '生命藥水',   icon: '🧪', cost: 30,  desc: '立即恢復 50 點 HP',              max: 99, tab: 'consumable' },
+  { id: 'elixir',      name: '滿血靈藥',   icon: '💊', cost: 100, desc: '完全恢復所有 HP',                max: 1,  tab: 'consumable' },
+  { id: 'shield_item', name: '魔法護盾',   icon: '🛡️', cost: 45,  desc: '下一次受傷完全免疫（一次性）',  max: 3,  tab: 'consumable' },
+  { id: 'scroll',      name: '時間之書',   icon: '📜', cost: 40,  desc: '本場答題時間 +10 秒',            max: 2,  tab: 'consumable' },
+  { id: 'doubleGold',  name: '財富護符',   icon: '🍀', cost: 80,  desc: '下一場戰鬥金幣獲得翻倍',        max: 2,  tab: 'consumable' },
+  { id: 'maxhp_up',    name: '生命精華',   icon: '💗', cost: 120, desc: '永久提升最大 HP +30',            max: 5,  tab: 'consumable' },
+  // 武器（永久 ATK）
+  { id: 'bronze_sword', name: '銅劍',      icon: '🗡️', cost: 40,  desc: '永久 ATK +8',   atk: 8,  max: 1, tab: 'weapon' },
+  { id: 'iron_sword',   name: '鐵劍',      icon: '⚔️', cost: 80,  desc: '永久 ATK +18',  atk: 18, max: 1, tab: 'weapon', req: 'bronze_sword' },
+  { id: 'steel_sword',  name: '鋼劍',      icon: '🔪', cost: 150, desc: '永久 ATK +30',  atk: 30, max: 1, tab: 'weapon', req: 'iron_sword' },
+  { id: 'magic_sword',  name: '魔法劍',    icon: '✨', cost: 280, desc: '永久 ATK +50',  atk: 50, max: 1, tab: 'weapon', req: 'steel_sword' },
+  // 防具（永久 DEF）
+  { id: 'leather',     name: '皮革護甲',   icon: '🥋', cost: 50,  desc: '永久 DEF +5（減傷）',  def: 5,  max: 1, tab: 'armor' },
+  { id: 'chainmail',   name: '鎖子甲',     icon: '🪖', cost: 110, desc: '永久 DEF +12',         def: 12, max: 1, tab: 'armor', req: 'leather' },
+  { id: 'plate',       name: '板甲',       icon: '🛡️', cost: 220, desc: '永久 DEF +22',         def: 22, max: 1, tab: 'armor', req: 'chainmail' },
+  { id: 'dragon_armor',name: '龍鱗甲',     icon: '🐉', cost: 400, desc: '永久 DEF +40',         def: 40, max: 1, tab: 'armor', req: 'plate' },
 ];
 
 // ── 成就徽章 ──────────────────────────────────────────
@@ -85,6 +97,7 @@ const INITIAL_STATE = () => ({
     maxHp: 100,
     hp: 100,
     attack: 25,
+    defense: 0,
     coins: 0,
     level: 1,
     skin: 'mage',
@@ -207,8 +220,8 @@ function pickMonster(level) {
 }
 
 function levelDifficulty(level) {
-  if (level <= 2) return 1;
-  if (level <= 5) return 2;
+  if (level <= 3) return 1;
+  if (level <= 8) return 2;
   return 3;
 }
 
@@ -497,6 +510,27 @@ function renderBattle() {
 }
 
 // ── 商店畫面 ──────────────────────────────────────────
+function shopItemCard(item) {
+  const p = G.player;
+  const bought = p.itemsBought[item.id] || 0;
+  const maxed = bought >= item.max;
+  const cantAfford = p.coins < item.cost;
+  const reqMet = !item.req || (p.itemsBought[item.req] || 0) > 0;
+  const disabled = maxed || cantAfford || !reqMet;
+  let badge = '';
+  if (maxed) badge = '<span class="item-badge owned">已購</span>';
+  else if (!reqMet) badge = `<span class="item-badge locked">🔒 需先購買上一階</span>`;
+  else if (cantAfford) badge = '<span class="item-badge poor">金幣不足</span>';
+  return `
+    <div class="shop-item ${disabled ? 'disabled' : ''} ${maxed ? 'purchased' : ''}"
+         onclick="${disabled ? '' : `buyItem('${item.id}')`}">
+      <div class="shop-item-icon">${item.icon}</div>
+      <div class="shop-item-name">${item.name}</div>
+      <div class="shop-item-desc">${item.desc}</div>
+      <div class="shop-item-cost">💰 ${item.cost} ${badge}</div>
+    </div>`;
+}
+
 function renderShop() {
   const { player: p } = G;
   const stats = { maxLevel: G.maxLevel, totalKills: G.totalKills, earnedBadges: G.earnedBadges };
@@ -509,35 +543,33 @@ function renderShop() {
         <div class="shop-coins">💰 ${p.coins} 枚金幣</div>
       </div>
 
-      <!-- Tabs -->
       <div class="shop-tabs">
-        <button class="shop-tab active" id="tab-items" onclick="switchShopTab('items')">道具</button>
-        <button class="shop-tab" id="tab-skins" onclick="switchShopTab('skins')">外觀</button>
+        <button class="shop-tab active" id="tab-consumable" onclick="switchShopTab('consumable')">消耗品</button>
+        <button class="shop-tab" id="tab-weapon"     onclick="switchShopTab('weapon')">武器</button>
+        <button class="shop-tab" id="tab-armor"      onclick="switchShopTab('armor')">防具</button>
+        <button class="shop-tab" id="tab-skins"      onclick="switchShopTab('skins')">外觀</button>
       </div>
 
-      <!-- Items Tab -->
-      <div id="shop-tab-items">
+      <div id="shop-tab-consumable">
         <div class="shop-grid">
-          ${SHOP_ITEMS.map(item => {
-            const bought = p.itemsBought[item.id] || 0;
-            const maxed = bought >= item.max;
-            const cantAfford = p.coins < item.cost;
-            const disabled = maxed || cantAfford;
-            return `
-              <div class="shop-item ${disabled ? 'disabled' : ''}" onclick="${disabled ? '' : `buyItem('${item.id}')`}">
-                <div class="shop-item-icon">${item.icon}</div>
-                <div class="shop-item-name">${item.name}</div>
-                <div class="shop-item-desc">${item.desc}</div>
-                <div class="shop-item-cost">💰 ${item.cost}
-                  ${maxed ? '<span style="color:var(--muted);font-size:0.7rem;margin-left:auto">已達上限</span>' : ''}
-                </div>
-              </div>
-            `;
-          }).join('')}
+          ${SHOP_ITEMS.filter(i => i.tab === 'consumable').map(shopItemCard).join('')}
         </div>
       </div>
 
-      <!-- Skins Tab -->
+      <div id="shop-tab-weapon" style="display:none">
+        <div class="shop-tip">💡 武器需依序升級，效果永久生效</div>
+        <div class="shop-grid">
+          ${SHOP_ITEMS.filter(i => i.tab === 'weapon').map(shopItemCard).join('')}
+        </div>
+      </div>
+
+      <div id="shop-tab-armor" style="display:none">
+        <div class="shop-tip">💡 防具減少每次受到的傷害，需依序升級</div>
+        <div class="shop-grid">
+          ${SHOP_ITEMS.filter(i => i.tab === 'armor').map(shopItemCard).join('')}
+        </div>
+      </div>
+
       <div id="shop-tab-skins" style="display:none">
         <div class="shop-grid">
           ${SKINS.map(skin => {
@@ -552,8 +584,7 @@ function renderShop() {
                 <div class="shop-item-cost" style="color:${active ? 'var(--green)' : unlocked ? 'var(--accent)' : 'var(--muted)'}">
                   ${active ? '當前角色' : unlocked ? '點擊選擇' : '尚未解鎖'}
                 </div>
-              </div>
-            `;
+              </div>`;
           }).join('')}
         </div>
       </div>
@@ -562,6 +593,7 @@ function renderShop() {
         <h3>勇者狀態</h3>
         <div class="stat-row"><span>❤️ 生命值</span><span class="stat-val">${p.hp} / ${p.maxHp}</span></div>
         <div class="stat-row"><span>⚔️ 攻擊力</span><span class="stat-val">${p.attack}</span></div>
+        <div class="stat-row"><span>🪖 防禦力</span><span class="stat-val">${p.defense}</span></div>
         <div class="stat-row"><span>🛡️ 護盾</span><span class="stat-val">${p.shielded ? '已激活' : '無'}</span></div>
         <div class="stat-row"><span>🌟 得分</span><span class="stat-val">${G.score}</span></div>
       </div>
@@ -574,10 +606,10 @@ function renderShop() {
 }
 
 function switchShopTab(tab) {
-  document.getElementById('shop-tab-items').style.display = tab === 'items' ? '' : 'none';
-  document.getElementById('shop-tab-skins').style.display = tab === 'skins' ? '' : 'none';
-  document.getElementById('tab-items').classList.toggle('active', tab === 'items');
-  document.getElementById('tab-skins').classList.toggle('active', tab === 'skins');
+  ['consumable','weapon','armor','skins'].forEach(t => {
+    document.getElementById(`shop-tab-${t}`).style.display = t === tab ? '' : 'none';
+    document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+  });
 }
 
 function selectSkin(skinId) {
@@ -823,7 +855,7 @@ function monsterAttacks() {
     return;
   }
   G.lastBattleNoDamage = false;
-  const dmg = G.monster.attack;
+  const dmg = Math.max(1, G.monster.attack - G.player.defense);
   G.player.hp = Math.max(0, G.player.hp - dmg);
   const playerEl = document.getElementById('fighter-player');
   if (playerEl) playerEl.classList.add('shake');
@@ -940,20 +972,27 @@ function continueAfterShop() { startBattle(); }
 function buyItem(id) {
   const item = SHOP_ITEMS.find(i => i.id === id);
   if (!item) return;
-  const bought = G.player.itemsBought[id] || 0;
+  const p = G.player;
+  const bought = p.itemsBought[id] || 0;
   if (bought >= item.max) { notify('此道具已達購買上限', 'error'); return; }
-  if (G.player.coins < item.cost) { notify('金幣不足！', 'error'); return; }
+  if (p.coins < item.cost) { notify('金幣不足！', 'error'); return; }
+  if (item.req && !(p.itemsBought[item.req] || 0)) { notify('需先購買上一階裝備！', 'error'); return; }
 
-  G.player.coins -= item.cost;
-  G.player.itemsBought[id] = bought + 1;
+  p.coins -= item.cost;
+  p.itemsBought[id] = bought + 1;
 
-  switch (id) {
-    case 'potion':     G.player.hp = Math.min(G.player.maxHp, G.player.hp + 50); notify('🧪 恢復 50 HP！', 'success'); break;
-    case 'sword':      G.player.attack += 15; notify(`⚔️ 攻擊力提升至 ${G.player.attack}！`, 'success'); break;
-    case 'shield':     G.player.shielded = true; notify('🛡️ 護盾已激活！', 'success'); break;
-    case 'scroll':     G.player.extraTime += 10; notify('📜 答題時間 +10 秒！', 'success'); break;
-    case 'elixir':     G.player.hp = G.player.maxHp; notify('💊 HP 完全恢復！', 'success'); break;
-    case 'doubleGold': G.player.doubleGold = true; notify('🍀 下一場金幣雙倍！', 'success'); break;
+  // 武器
+  if (item.atk) { p.attack += item.atk; notify(`${item.icon} ${item.name}！ATK +${item.atk} → 現在 ${p.attack}`, 'success'); }
+  // 防具
+  else if (item.def) { p.defense += item.def; notify(`${item.icon} ${item.name}！DEF +${item.def} → 現在 ${p.defense}`, 'success'); }
+  // 消耗品
+  else switch (id) {
+    case 'potion':      p.hp = Math.min(p.maxHp, p.hp + 50); notify('🧪 恢復 50 HP！', 'success'); break;
+    case 'elixir':      p.hp = p.maxHp; notify('💊 HP 完全恢復！', 'success'); break;
+    case 'shield_item': p.shielded = true; notify('🛡️ 護盾已激活！', 'success'); break;
+    case 'scroll':      p.extraTime += 10; notify('📜 答題時間 +10 秒！', 'success'); break;
+    case 'doubleGold':  p.doubleGold = true; notify('🍀 下一場金幣雙倍！', 'success'); break;
+    case 'maxhp_up':    p.maxHp += 30; p.hp += 30; notify(`💗 最大 HP 提升至 ${p.maxHp}！`, 'success'); break;
   }
 
   checkBadges();
